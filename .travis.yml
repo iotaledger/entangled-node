@@ -5,5 +5,5 @@ os:
   - osx
 before_install: npm install -g node-gyp
 script:
-  - npm npm test
+  - npm run test
   - if [[ -n "$TRAVIS_TAG" ]]; then npm run prebuild; fi

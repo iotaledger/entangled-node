@@ -24,6 +24,7 @@
          "src/keccak/KeccakSponge.c",
          "src/keccak/KeccakF-1600-reference.c",
       ],
+      "cflags+": ["-std=c99"],
       "include_dirs" : [
          "<!(node -e \"require('nan')\")",
          "entangled",
