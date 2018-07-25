@@ -1,3 +1,3 @@
 [submodule "entangled"]
 	path = entangled
-	url = git@github.com:iotaledger/entangled.git
+	url = https://github.com/iotaledger/entangled.git
