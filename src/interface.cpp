@@ -32,7 +32,6 @@ void PoW(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     const char* trytes = name.c_str();
 
     uint8_t mwm = (uint8_t) info[1]->NumberValue();
-    char* nonce = (char*)calloc(27 + 1, sizeof(char));
 
     char* foundNonce = iota_pow(trytes, mwm);
 

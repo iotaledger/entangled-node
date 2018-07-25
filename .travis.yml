@@ -3,9 +3,7 @@ node_js: 8
 os:
   - linux
   - osx
-env:
-  - npm_config_debug=yes
-before_install: npm install -g node-gyp nyc
+before_install: npm install -g node-gyp
 script:
-  - nyc npm test && npm run test-ts
+  - npm npm test
   - if [[ -n "$TRAVIS_TAG" ]]; then npm run prebuild; fi
