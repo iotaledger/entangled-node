@@ -14,6 +14,7 @@ describe('Entangled.powFunc', function() {
 
 	tests.forEach(function(test) {
 		it('Should generate valid PoW: ' + test.expected, async function() {
+			this.timeout(0)
 			const pow = await powFunc(test.input, 14)
 			assert.deepEqual(test.expectedLength, pow.length)
 		})
