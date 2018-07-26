@@ -5,7 +5,7 @@
 
 Usage:
 
-```
+```javascript
 const { powFunc, genFunc } = require('entangled-node');
 
 (async () => {
