@@ -20,6 +20,7 @@
          "entangled/common/curl-p/curl_p_ptrit.c",
          "entangled/common/curl-p/hashcash.c",
          "entangled/common/curl-p/pearl_diver.c",
+         "entangled/utils/system.c",
          "src/keccak/KeccakHash.c",
          "src/keccak/KeccakSponge.c",
          "src/keccak/KeccakF-1600-reference.c",
