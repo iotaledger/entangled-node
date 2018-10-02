@@ -1,6 +1,6 @@
 {
 	"name": "entangled-node",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "IOTA Entangled node bindings",
 	"main": "entangled.js",
 	"scripts": {
@@ -24,6 +24,7 @@
 	"devDependencies": {
 		"chai": "^4.1.2",
 		"mocha": "^5.2.0",
+		"node-abi": "^2.4.5",
 		"prebuild": "^8.1.0"
 	},
 	"dependencies": {
