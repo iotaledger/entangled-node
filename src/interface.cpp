@@ -54,7 +54,7 @@ void GeN(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     std::string name(*nan_string);
     const char* seed = name.c_str();
 
-    uint8_t index = (uint8_t) info[1]->NumberValue();
+    uint64_t index = (uint64_t) info[1]->NumberValue();
 
     char* foundNonce = iota_sign_address_gen(seed, index, 2);
 
