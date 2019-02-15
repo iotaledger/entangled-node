@@ -15,7 +15,7 @@ const char *ToCString(Local<String> str) {
   return *value ? *value : "<string conversion failed>";
 }
 
-void PoW(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+void powTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 
   if (info.Length() < 2) {
     Nan::ThrowTypeError("Wrong number of arguments");
@@ -38,7 +38,7 @@ void PoW(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   info.GetReturnValue().Set(Nan::New(foundNonce).ToLocalChecked());
 }
 
-void GeN(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+void genAddressTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 
   if (info.Length() < 2) {
     Nan::ThrowTypeError("Wrong number of arguments");
@@ -62,10 +62,10 @@ void GeN(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 }
 
 void Init(v8::Local<v8::Object> exports) {
-  exports->Set(Nan::New("pow").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(PoW)->GetFunction());
-  exports->Set(Nan::New("gen").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(GeN)->GetFunction());
+  exports->Set(Nan::New("powTrytes").ToLocalChecked(),
+               Nan::New<v8::FunctionTemplate>(powTrytes)->GetFunction());
+  exports->Set(Nan::New("genAddressTrytes").ToLocalChecked(),
+               Nan::New<v8::FunctionTemplate>(genAddressTrytes)->GetFunction());
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)

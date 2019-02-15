@@ -1,9 +1,9 @@
 const chai = require('chai')
 const assert = chai.assert
 
-const { powFunc, genFunc } = require('../entangled')
+const { powTrytesFunc, genAddressTrytesFunc } = require('../entangled')
 
-describe('Entangled.powFunc', function() {
+describe('Entangled.powTrytesFunc', function() {
 	const tests = [
 		{
 			input:
@@ -15,13 +15,13 @@ describe('Entangled.powFunc', function() {
 	tests.forEach(function(test) {
 		it('Should generate valid PoW of length: ' + test.expectedLength, async function() {
 			this.timeout(0)
-			const pow = await powFunc(test.input, 14)
+			const pow = await powTrytesFunc(test.input, 14)
 			assert.deepEqual(test.expectedLength, pow.length)
 		})
 	})
 })
 
-describe('Entangled.genFunc', function() {
+describe('Entangled.genAddressTrytesFunc', function() {
 	const seed = 'NREIZPJYTY9FUVBTLTQWHRUUAQ9YFAUVQVRBAZSIJOIHQMS9UFGSXQDHCRNYCILBXGOQGSFABTPMRESEB'
 	const tests = [
 		{
@@ -40,7 +40,7 @@ describe('Entangled.genFunc', function() {
 
 	tests.forEach(function(test) {
 		it(`Should generate valid #${test.index} address:` + test.expected, async function() {
-			const address = await genFunc(seed, test.index)
+			const address = await genAddressTrytesFunc(seed, test.index)
 			assert.deepEqual(test.expected, address)
 		})
 	})

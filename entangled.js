@@ -1,15 +1,15 @@
 const entangledApi = require('./build/Release/entangled.node')
 
 /**
- * Do Proof of Work
+ * Do Proof of Work on trytes
  * @param {string} trytes - Input trytes value
  * @param {number} mwm - (optional) Min Weight Magnitude
  * @returns {string} Proof of Work
  **/
-const powFunc = (trytes, mwm) => {
+const powTrytesFunc = (trytes, mwm) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const pow = entangledApi.pow(trytes, mwm || 14)
+			const pow = entangledApi.powTrytes(trytes, mwm || 14)
 			resolve(pow)
 		} catch (err) {
 			reject(err)
@@ -18,16 +18,16 @@ const powFunc = (trytes, mwm) => {
 }
 
 /**
- * Generate address
- * @param {string} seed - Seed
+ * Generate address in trytes
+ * @param {string} seed - Seed in trytes
  * @param {number} index - Address index
  * @param {number} mwm - (optional) Target security
- * @returns {string} Address
+ * @returns {string} Address in trytes
  **/
-const genFunc = (seed, index, security) => {
+const genAddressTrytesFunc = (seed, index, security) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const address = entangledApi.gen(seed, index, security || 2)
+			const address = entangledApi.genAddressTrytes(seed, index, security || 2)
 			resolve(address)
 		} catch (err) {
 			reject(err)
@@ -36,6 +36,6 @@ const genFunc = (seed, index, security) => {
 }
 
 module.exports = {
-	powFunc,
-	genFunc
+	powTrytesFunc,
+	genAddressTrytesFunc
 }
