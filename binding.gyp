@@ -16,8 +16,9 @@
          "entangled/common/kerl/bigint.c",
          "entangled/common/sign/v1/iss_curl.c",
          "entangled/common/sign/v1/iss_kerl.c",
+         "entangled/common/curl-p/const.c",
          "entangled/common/curl-p/curl_p.c",
-         "entangled/common/curl-p/curl_p_ptrit.c",
+         "entangled/common/curl-p/ptrit.c",
          "entangled/common/curl-p/hashcash.c",
          "entangled/common/curl-p/pearl_diver.c",
          "entangled/utils/system.c",
@@ -29,7 +30,8 @@
       "include_dirs" : [
          "<!(node -e \"require('nan')\")",
          "entangled",
-         "src"
+         "src",
+         "src/utarray"
       ]
     }
   ]
