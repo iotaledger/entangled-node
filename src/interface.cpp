@@ -56,9 +56,39 @@ void genAddressTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 
   uint64_t index = (uint64_t)info[1]->NumberValue();
 
-  char *foundNonce = iota_sign_address_gen_trytes(seed, index, 2);
+  char *address = iota_sign_address_gen_trytes(seed, index, 2);
 
-  info.GetReturnValue().Set(Nan::New(foundNonce).ToLocalChecked());
+  info.GetReturnValue().Set(Nan::New(address).ToLocalChecked());
+}
+
+void genAddressTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+
+  if (info.Length() < 2) {
+    Nan::ThrowTypeError("Wrong number of arguments");
+    return;
+  }
+
+  if (!info[0]->IsArray() || !info[1]->IsNumber()) {
+    Nan::ThrowTypeError("Wrong arguments");
+    return;
+  }
+
+  trit_t seed[243];
+  Local<v8::Array> trits = Local<v8::Array>::Cast(info[0]);
+  for (int i = 0; i < trits->Length(); i++) {
+    seed[i] = trits->Get(i)->NumberValue();
+  }
+
+  uint64_t index = (uint64_t)info[1]->NumberValue();
+
+  trit_t *address = iota_sign_address_gen_trits(seed, index, 2);
+
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>(243);
+  for (size_t i = 0; i < 243; i++) {
+    ret->Set(i, Nan::New(address[i]));
+  };
+
+  info.GetReturnValue().Set(ret);
 }
 
 void Init(v8::Local<v8::Object> exports) {
@@ -66,6 +96,8 @@ void Init(v8::Local<v8::Object> exports) {
                Nan::New<v8::FunctionTemplate>(powTrytes)->GetFunction());
   exports->Set(Nan::New("genAddressTrytes").ToLocalChecked(),
                Nan::New<v8::FunctionTemplate>(genAddressTrytes)->GetFunction());
+  exports->Set(Nan::New("genAddressTrits").ToLocalChecked(),
+               Nan::New<v8::FunctionTemplate>(genAddressTrits)->GetFunction());
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)

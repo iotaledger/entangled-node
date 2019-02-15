@@ -2,3 +2,4 @@
 
 export function powTrytesFunc(trytes: string, mwm: number): Promise<String>
 export function genAddressTrytesFunc(seed: string, index: number, security: number): Promise<String>
+export function genAddressTritsFunc(seed: Int8Array, index: number, security: number): Promise<Int8Array>

@@ -6,14 +6,17 @@
 Usage:
 
 ```javascript
-const { powTrytesFunc, genAddressTrytesFunc } = require('entangled-node');
+const { powTrytesFunc, genAddressTrytesFunc, genAddressTritsFunc } = require('entangled-node');
 
 (async () => {
 
-  // Do Proof of Work
+  // Do Proof of Work on trytes
   const pow = await powTrytesFunc("TRYTES", 14);
 
   // Generate address trytes
-  const address = await genAddressTrytesFunc("SEED", 0, 2)
+  const addressTrytes = await genAddressTrytesFunc("SEED", 0, 2)
+
+  // Generate address trits
+  const addressTrits = await genAddressTritsFunc([-1, 0, ..., 1, 1], 0, 2)
 
 })();
