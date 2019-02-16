@@ -18,10 +18,10 @@ const {
 (async () => {
 
   // Do Proof of Work on trytes
-  const pow1 = await powTrytesFunc("TRYTES", 14);
+  const pow = await powTrytesFunc("TRYTES", 14);
 
   // Do Proof of Work on a bundle
-  const pow2 = await powBundleFunc({"TRYTES1", "TRYTES2", "TRYTES3"}, "TRUNK", "BRANCH", 14);
+  const transactions = await powBundleFunc({"TRYTES1", "TRYTES2", "TRYTES3"}, "TRUNK", "BRANCH", 14);
 
   // Generate address trytes
   const addressTrytes = await genAddressTrytesFunc("SEED", 0, 2);

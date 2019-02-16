@@ -1,3 +1,4 @@
+#include "common/helpers/digest.h"
 #include "common/helpers/pow.h"
 #include "common/helpers/sign.h"
 #include <nan.h>
@@ -37,6 +38,8 @@ void powTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 
   info.GetReturnValue().Set(Nan::New(foundNonce).ToLocalChecked());
 }
+
+void powBundle(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
 
 void genAddressTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
 
@@ -91,13 +94,47 @@ void genAddressTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   info.GetReturnValue().Set(ret);
 }
 
+void genSignatureTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
+
+void genSignatureTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
+
+void transactionHash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  if (info.Length() < 1) {
+    Nan::ThrowTypeError("Wrong number of arguments");
+    return;
+  }
+
+  if (!info[0]->IsString()) {
+    Nan::ThrowTypeError("Wrong arguments");
+    return;
+  }
+
+  Nan::Utf8String nan_string(info[0]);
+  std::string name(*nan_string);
+  const char *trytes = name.c_str();
+
+  char *hash = iota_digest(trytes);
+
+  info.GetReturnValue().Set(Nan::New(hash).ToLocalChecked());
+}
+
 void Init(v8::Local<v8::Object> exports) {
   exports->Set(Nan::New("powTrytes").ToLocalChecked(),
                Nan::New<v8::FunctionTemplate>(powTrytes)->GetFunction());
+  exports->Set(Nan::New("powBundle").ToLocalChecked(),
+               Nan::New<v8::FunctionTemplate>(powBundle)->GetFunction());
   exports->Set(Nan::New("genAddressTrytes").ToLocalChecked(),
                Nan::New<v8::FunctionTemplate>(genAddressTrytes)->GetFunction());
   exports->Set(Nan::New("genAddressTrits").ToLocalChecked(),
                Nan::New<v8::FunctionTemplate>(genAddressTrits)->GetFunction());
+  exports->Set(
+      Nan::New("genSignatureTrytes").ToLocalChecked(),
+      Nan::New<v8::FunctionTemplate>(genSignatureTrytes)->GetFunction());
+  exports->Set(
+      Nan::New("genSignatureTrits").ToLocalChecked(),
+      Nan::New<v8::FunctionTemplate>(genSignatureTrits)->GetFunction());
+  exports->Set(Nan::New("transactionHash").ToLocalChecked(),
+               Nan::New<v8::FunctionTemplate>(transactionHash)->GetFunction());
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
