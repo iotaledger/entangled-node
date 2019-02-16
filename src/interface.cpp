@@ -1,3 +1,4 @@
+#include <iostream>
 #include <nan.h>
 #include <string>
 
@@ -43,6 +44,60 @@ static NAN_METHOD(powBundle) {
     Nan::ThrowError("Wrong arguments");
     return;
   }
+
+  bundle_transactions_t *bundle = NULL;
+  iota_transaction_t tx;
+  iota_transaction_t *curTx = NULL;
+  flex_trit_t serializedFlexTrits[FLEX_TRIT_SIZE_8019];
+  char serializedTrytes[NUM_TRYTES_SERIALIZED_TRANSACTION + 1] = {0};
+  flex_trit_t flexTrunk[FLEX_TRIT_SIZE_243];
+  flex_trit_t flexBranch[FLEX_TRIT_SIZE_243];
+  size_t i = 0;
+
+  std::string trunk(*Nan::Utf8String(info[1]));
+  flex_trits_from_trytes(flexTrunk, NUM_TRITS_TRUNK, (tryte_t *)trunk.c_str(),
+                         NUM_TRYTES_TRUNK, NUM_TRYTES_TRUNK);
+  std::string branch(*Nan::Utf8String(info[2]));
+  flex_trits_from_trytes(flexBranch, NUM_TRITS_BRANCH,
+                         (tryte_t *)branch.c_str(), NUM_TRYTES_BRANCH,
+                         NUM_TRYTES_BRANCH);
+
+  bundle_transactions_new(&bundle);
+
+  v8::Local<v8::Array> txsTrytes = v8::Local<v8::Array>::Cast(info[0]);
+  size_t txNum = txsTrytes->Length();
+  for (size_t i = 0; i < txNum; i++) {
+    flex_trits_from_trytes(
+        serializedFlexTrits, NUM_TRITS_SERIALIZED_TRANSACTION,
+        (tryte_t *)(*Nan::Utf8String(txsTrytes->Get(i).As<v8::String>())),
+        NUM_TRYTES_SERIALIZED_TRANSACTION, NUM_TRYTES_SERIALIZED_TRANSACTION);
+    transaction_deserialize_from_trits(&tx, serializedFlexTrits, false);
+    bundle_transactions_add(bundle, &tx);
+  }
+
+  auto mwm = static_cast<uint8_t>(Nan::To<unsigned>(info[3]).FromJust());
+
+  if (iota_pow_bundle(bundle, flexTrunk, flexBranch, mwm) != RC_OK) {
+    bundle_transactions_free(&bundle);
+    Nan::ThrowError("Binding iota_pow_bundle failed");
+    return;
+  }
+
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>(txNum);
+  i = 0;
+  BUNDLE_FOREACH(bundle, curTx) {
+    transaction_serialize_on_flex_trits(curTx, serializedFlexTrits);
+    flex_trits_to_trytes((tryte_t *)serializedTrytes,
+                         NUM_TRYTES_SERIALIZED_TRANSACTION, serializedFlexTrits,
+                         NUM_TRITS_SERIALIZED_TRANSACTION,
+                         NUM_TRITS_SERIALIZED_TRANSACTION);
+    ret->Set(i,
+             Nan::New<v8::String>((char *)serializedTrytes).ToLocalChecked());
+    i++;
+  }
+  bundle_transactions_free(&bundle);
+
+  info.GetReturnValue().Set(ret);
 }
 
 static NAN_METHOD(genAddressTrytes) {

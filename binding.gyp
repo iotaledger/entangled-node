@@ -4,6 +4,8 @@
       "target_name": "entangled",
       "sources": [
          "src/interface.cpp",
+         "entangled/common/model/bundle.c",
+         "entangled/common/model/transaction.c",
          "entangled/common/helpers/pow.c",
          "entangled/common/pow/pow.c",
          "entangled/common/helpers/sign.c",
@@ -12,6 +14,7 @@
          "entangled/common/trinary/trit_long.c",
          "entangled/common/trinary/ptrit_incr.c",
          "entangled/common/trinary/trit_tryte.c",
+         "entangled/common/trinary/flex_trit.c",
          "entangled/common/trinary/add.c",
          "entangled/common/kerl/kerl.c",
          "entangled/common/kerl/converter.c",
@@ -26,6 +29,7 @@
          "entangled/common/curl-p/hashcash.c",
          "entangled/common/curl-p/pearl_diver.c",
          "entangled/utils/system.c",
+         "entangled/utils/time.c",
          "src/keccak/KeccakHash.c",
          "src/keccak/KeccakSponge.c",
          "src/keccak/KeccakF-1600-reference.c",
@@ -35,7 +39,8 @@
          "<!(node -e \"require('nan')\")",
          "entangled",
          "src",
-         "src/utarray"
+         "src/utarray",
+         "src/embear"
       ]
     }
   ]
