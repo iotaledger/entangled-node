@@ -36,6 +36,6 @@ const {
   const signatureTrits = await genSignatureTritsFunc([1, 0, ..., 0, -1], 0, 2, [-1, -1, ..., 1, 0]);
 
   // Transaction hash
-  const hash = await transactionHash("TRYTES");
+  const hash = await transactionHashFunc("TRYTES");
 
 })();

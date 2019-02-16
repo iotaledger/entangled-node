@@ -1,89 +1,96 @@
-#include "common/helpers/digest.h"
-#include "common/helpers/pow.h"
-#include "common/helpers/sign.h"
-#include <iostream>
 #include <nan.h>
 #include <string>
 
-using v8::FunctionCallbackInfo;
-using v8::Isolate;
-using v8::Local;
-using v8::Object;
-using v8::String;
-using v8::Value;
+#include "common/helpers/digest.h"
+#include "common/helpers/pow.h"
+#include "common/helpers/sign.h"
 
-const char *ToCString(Local<String> str) {
-  String::Utf8Value value(str);
-  return *value ? *value : "<string conversion failed>";
-}
-
-void powTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
-
+static NAN_METHOD(powTrytes) {
   if (info.Length() < 2) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsString() || !info[1]->IsNumber()) {
-    Nan::ThrowTypeError("Wrong arguments");
+    Nan::ThrowError("Wrong arguments");
     return;
   }
 
-  Nan::Utf8String nan_string(info[0]);
-  std::string name(*nan_string);
-  const char *trytes = name.c_str();
+  char *nonce = NULL;
+  std::string trytes(*Nan::Utf8String(info[0]));
+  auto ctrytes = trytes.c_str();
+  auto mwm = static_cast<uint8_t>(Nan::To<unsigned>(info[1]).FromJust());
 
-  uint8_t mwm = (uint8_t)info[1]->NumberValue();
+  if ((nonce = iota_pow_trytes(ctrytes, mwm)) == NULL) {
+    Nan::ThrowError("Binding iota_pow_trytes failed");
+    return;
+  }
 
-  char *foundNonce = iota_pow_trytes(trytes, mwm);
+  auto ret = Nan::New(nonce).ToLocalChecked();
+  free(nonce);
 
-  info.GetReturnValue().Set(Nan::New(foundNonce).ToLocalChecked());
+  info.GetReturnValue().Set(ret);
 }
 
-void powBundle(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
-
-void genAddressTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
-
-  if (info.Length() < 2) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+static NAN_METHOD(powBundle) {
+  if (info.Length() < 4) {
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
-  if (!info[0]->IsString() || !info[1]->IsNumber()) {
-    Nan::ThrowTypeError("Wrong arguments");
+  if (!info[0]->IsArray() || !info[1]->IsString() || !info[2]->IsString() ||
+      !info[3]->IsNumber()) {
+    Nan::ThrowError("Wrong arguments");
     return;
   }
-
-  Nan::Utf8String nan_string(info[0]);
-  std::string name(*nan_string);
-  const char *seed = name.c_str();
-
-  uint64_t index = (uint64_t)info[1]->NumberValue();
-
-  char *address = iota_sign_address_gen_trytes(seed, index, 2);
-
-  info.GetReturnValue().Set(Nan::New(address).ToLocalChecked());
 }
 
-void genAddressTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
-
-  if (info.Length() < 2) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+static NAN_METHOD(genAddressTrytes) {
+  if (info.Length() < 3) {
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
-  if (!info[0]->IsArray() || !info[1]->IsNumber()) {
-    Nan::ThrowTypeError("Wrong arguments");
+  if (!info[0]->IsString() || !info[1]->IsNumber() || !info[2]->IsNumber()) {
+    Nan::ThrowError("Wrong arguments");
+    return;
+  }
+
+  char *address = NULL;
+  std::string seed(*Nan::Utf8String(info[0]));
+  auto cseed = seed.c_str();
+  auto index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
+  auto security = static_cast<uint64_t>(Nan::To<unsigned>(info[2]).FromJust());
+
+  if ((address = iota_sign_address_gen_trytes(cseed, index, security)) ==
+      NULL) {
+    Nan::ThrowError("Binding iota_sign_address_gen_trytes failed");
+    return;
+  }
+
+  auto ret = Nan::New(address).ToLocalChecked();
+  free(address);
+
+  info.GetReturnValue().Set(ret);
+}
+
+static NAN_METHOD(genAddressTrits) {
+  if (info.Length() < 3) {
+    Nan::ThrowError("Wrong number of arguments");
+    return;
+  }
+
+  if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsNumber()) {
+    Nan::ThrowError("Wrong arguments");
     return;
   }
 
   trit_t seed[243];
-  Local<v8::Array> trits = Local<v8::Array>::Cast(info[0]);
-  for (int i = 0; i < trits->Length(); i++) {
+  v8::Local<v8::Array> trits = v8::Local<v8::Array>::Cast(info[0]);
+  for (size_t i = 0; i < trits->Length(); i++) {
     seed[i] = trits->Get(i)->NumberValue();
   }
-
-  uint64_t index = (uint64_t)info[1]->NumberValue();
+  uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
 
   trit_t *address = iota_sign_address_gen_trits(seed, index, 2);
 
@@ -95,59 +102,61 @@ void genAddressTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   info.GetReturnValue().Set(ret);
 }
 
-void genSignatureTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+static NAN_METHOD(genSignatureTrytes) {
   if (info.Length() < 4) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsString() || !info[1]->IsNumber() || !info[2]->IsNumber() ||
       !info[3]->IsString()) {
-    Nan::ThrowTypeError("Wrong arguments");
+    Nan::ThrowError("Wrong arguments");
     return;
   }
 
-  Nan::Utf8String nan_string_seed(info[0]);
-  std::string seed_str(*nan_string_seed);
-  const char *seed = seed_str.c_str();
+  char *signature = NULL;
+  std::string seed(*Nan::Utf8String(info[0]));
+  auto cseed = seed.c_str();
+  auto index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
+  auto security = static_cast<uint64_t>(Nan::To<unsigned>(info[2]).FromJust());
+  std::string bundle(*Nan::Utf8String(info[3]));
+  auto cbundle = bundle.c_str();
 
-  uint64_t index = (uint64_t)info[1]->NumberValue();
-  uint64_t security = (uint64_t)info[2]->NumberValue();
+  if ((signature = iota_sign_signature_gen_trytes(cseed, index, security,
+                                                  cbundle)) == NULL) {
+    Nan::ThrowError("Binding iota_sign_signature_gen_trytes failed");
+    return;
+  }
 
-  Nan::Utf8String nan_string_bundle(info[3]);
-  std::string bundle_str(*nan_string_bundle);
-  const char *bundle = bundle_str.c_str();
+  auto ret = Nan::New(signature).ToLocalChecked();
+  free(signature);
 
-  char *signature =
-      iota_sign_signature_gen_trytes(seed, index, security, bundle);
-
-  info.GetReturnValue().Set(Nan::New(signature).ToLocalChecked());
+  info.GetReturnValue().Set(ret);
 }
 
-void genSignatureTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+static NAN_METHOD(genSignatureTrits) {
   if (info.Length() < 4) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsNumber() ||
       !info[3]->IsArray()) {
-    Nan::ThrowTypeError("Wrong arguments");
+    Nan::ThrowError("Wrong arguments");
     return;
   }
 
   trit_t seed[243];
-  Local<v8::Array> seed_array = Local<v8::Array>::Cast(info[0]);
-  for (int i = 0; i < seed_array->Length(); i++) {
+  v8::Local<v8::Array> seed_array = v8::Local<v8::Array>::Cast(info[0]);
+  for (size_t i = 0; i < seed_array->Length(); i++) {
     seed[i] = seed_array->Get(i)->NumberValue();
   }
-
-  uint64_t index = (uint64_t)info[1]->NumberValue();
-  uint64_t security = (uint64_t)info[2]->NumberValue();
-
+  uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
+  uint64_t security =
+      static_cast<uint64_t>(Nan::To<unsigned>(info[2]).FromJust());
   trit_t bundle[243];
-  Local<v8::Array> bundle_array = Local<v8::Array>::Cast(info[3]);
-  for (int i = 0; i < bundle_array->Length(); i++) {
+  v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[3]);
+  for (size_t i = 0; i < bundle_array->Length(); i++) {
     bundle[i] = bundle_array->Get(i)->NumberValue();
   }
 
@@ -162,43 +171,40 @@ void genSignatureTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   info.GetReturnValue().Set(ret);
 }
 
-void transactionHash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+static NAN_METHOD(transactionHash) {
   if (info.Length() < 1) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsString()) {
-    Nan::ThrowTypeError("Wrong arguments");
+    Nan::ThrowError("Wrong arguments");
     return;
   }
 
-  Nan::Utf8String nan_string(info[0]);
-  std::string name(*nan_string);
-  const char *trytes = name.c_str();
+  char *hash = NULL;
+  std::string trytes(*Nan::Utf8String(info[0]));
+  auto ctrytes = trytes.c_str();
 
-  char *hash = iota_digest(trytes);
+  if ((hash = iota_digest(ctrytes)) == NULL) {
+    Nan::ThrowError("Binding iota_digest failed");
+    return;
+  }
 
-  info.GetReturnValue().Set(Nan::New(hash).ToLocalChecked());
+  auto ret = Nan::New(hash).ToLocalChecked();
+  free(hash);
+
+  info.GetReturnValue().Set(ret);
 }
 
-void Init(v8::Local<v8::Object> exports) {
-  exports->Set(Nan::New("powTrytes").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(powTrytes)->GetFunction());
-  exports->Set(Nan::New("powBundle").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(powBundle)->GetFunction());
-  exports->Set(Nan::New("genAddressTrytes").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(genAddressTrytes)->GetFunction());
-  exports->Set(Nan::New("genAddressTrits").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(genAddressTrits)->GetFunction());
-  exports->Set(
-      Nan::New("genSignatureTrytes").ToLocalChecked(),
-      Nan::New<v8::FunctionTemplate>(genSignatureTrytes)->GetFunction());
-  exports->Set(
-      Nan::New("genSignatureTrits").ToLocalChecked(),
-      Nan::New<v8::FunctionTemplate>(genSignatureTrits)->GetFunction());
-  exports->Set(Nan::New("transactionHash").ToLocalChecked(),
-               Nan::New<v8::FunctionTemplate>(transactionHash)->GetFunction());
+NAN_MODULE_INIT(Init) {
+  NAN_EXPORT(target, powTrytes);
+  NAN_EXPORT(target, powBundle);
+  NAN_EXPORT(target, genAddressTrytes);
+  NAN_EXPORT(target, genAddressTrits);
+  NAN_EXPORT(target, genSignatureTrytes);
+  NAN_EXPORT(target, genSignatureTrits);
+  NAN_EXPORT(target, transactionHash);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
