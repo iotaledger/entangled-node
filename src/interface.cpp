@@ -1,6 +1,7 @@
 #include "common/helpers/digest.h"
 #include "common/helpers/pow.h"
 #include "common/helpers/sign.h"
+#include <iostream>
 #include <nan.h>
 #include <string>
 
@@ -94,9 +95,72 @@ void genAddressTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   info.GetReturnValue().Set(ret);
 }
 
-void genSignatureTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
+void genSignatureTrytes(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  if (info.Length() < 4) {
+    Nan::ThrowTypeError("Wrong number of arguments");
+    return;
+  }
 
-void genSignatureTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {}
+  if (!info[0]->IsString() || !info[1]->IsNumber() || !info[2]->IsNumber() ||
+      !info[3]->IsString()) {
+    Nan::ThrowTypeError("Wrong arguments");
+    return;
+  }
+
+  Nan::Utf8String nan_string_seed(info[0]);
+  std::string seed_str(*nan_string_seed);
+  const char *seed = seed_str.c_str();
+
+  uint64_t index = (uint64_t)info[1]->NumberValue();
+  uint64_t security = (uint64_t)info[2]->NumberValue();
+
+  Nan::Utf8String nan_string_bundle(info[3]);
+  std::string bundle_str(*nan_string_bundle);
+  const char *bundle = bundle_str.c_str();
+
+  char *signature =
+      iota_sign_signature_gen_trytes(seed, index, security, bundle);
+
+  info.GetReturnValue().Set(Nan::New(signature).ToLocalChecked());
+}
+
+void genSignatureTrits(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  if (info.Length() < 4) {
+    Nan::ThrowTypeError("Wrong number of arguments");
+    return;
+  }
+
+  if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsNumber() ||
+      !info[3]->IsArray()) {
+    Nan::ThrowTypeError("Wrong arguments");
+    return;
+  }
+
+  trit_t seed[243];
+  Local<v8::Array> seed_array = Local<v8::Array>::Cast(info[0]);
+  for (int i = 0; i < seed_array->Length(); i++) {
+    seed[i] = seed_array->Get(i)->NumberValue();
+  }
+
+  uint64_t index = (uint64_t)info[1]->NumberValue();
+  uint64_t security = (uint64_t)info[2]->NumberValue();
+
+  trit_t bundle[243];
+  Local<v8::Array> bundle_array = Local<v8::Array>::Cast(info[3]);
+  for (int i = 0; i < bundle_array->Length(); i++) {
+    bundle[i] = bundle_array->Get(i)->NumberValue();
+  }
+
+  trit_t *signature =
+      iota_sign_signature_gen_trits(seed, index, security, bundle);
+
+  v8::Local<v8::Array> ret = Nan::New<v8::Array>(6561 * security);
+  for (size_t i = 0; i < 6561 * security; i++) {
+    ret->Set(i, Nan::New(signature[i]));
+  };
+
+  info.GetReturnValue().Set(ret);
+}
 
 void transactionHash(const Nan::FunctionCallbackInfo<v8::Value> &info) {
   if (info.Length() < 1) {
