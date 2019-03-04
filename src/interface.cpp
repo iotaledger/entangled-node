@@ -6,6 +6,8 @@
 #include "common/helpers/pow.h"
 #include "common/helpers/sign.h"
 
+#include "utils/memset_safe.h"
+
 static NAN_METHOD(powTrytes) {
   if (info.Length() < 2) {
     Nan::ThrowError("Wrong number of arguments");
@@ -119,9 +121,12 @@ static NAN_METHOD(genAddressTrytes) {
 
   if ((address = iota_sign_address_gen_trytes(cseed, index, security)) ==
       NULL) {
+    memset_safe((void*)cseed, 81, 0, 81);
     Nan::ThrowError("Binding iota_sign_address_gen_trytes failed");
     return;
   }
+
+  memset_safe((void*)cseed, 81, 0, 81);
 
   auto ret = Nan::New(address).ToLocalChecked();
   free(address);
@@ -148,6 +153,8 @@ static NAN_METHOD(genAddressTrits) {
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
 
   trit_t *address = iota_sign_address_gen_trits(seed, index, 2);
+
+  memset_safe((void*)seed, 243, 0, 243);
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(243);
   for (size_t i = 0; i < 243; i++) {
@@ -179,9 +186,12 @@ static NAN_METHOD(genSignatureTrytes) {
 
   if ((signature = iota_sign_signature_gen_trytes(cseed, index, security,
                                                   cbundle)) == NULL) {
+    memset_safe((void*)cseed, 81, 0, 81);
     Nan::ThrowError("Binding iota_sign_signature_gen_trytes failed");
     return;
   }
+
+  memset_safe((void*)cseed, 81, 0, 81);
 
   auto ret = Nan::New(signature).ToLocalChecked();
   free(signature);
@@ -217,6 +227,8 @@ static NAN_METHOD(genSignatureTrits) {
 
   trit_t *signature =
       iota_sign_signature_gen_trits(seed, index, security, bundle);
+
+  memset_safe((void*)seed, 243, 0, 243);
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
