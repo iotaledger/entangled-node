@@ -7,7 +7,6 @@
          "entangled/common/model/bundle.c",
          "entangled/common/model/transaction.c",
          "entangled/common/helpers/pow.c",
-         "entangled/common/pow/pow.c",
          "entangled/common/helpers/sign.c",
          "entangled/common/helpers/digest.c",
          "entangled/common/trinary/trit_ptrit.c",
