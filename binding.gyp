@@ -14,6 +14,7 @@
          "entangled/common/trinary/trit_tryte.c",
          "entangled/common/trinary/flex_trit.c",
          "entangled/common/trinary/add.c",
+         "entangled/common/trinary/ptrit.c",
          "entangled/common/crypto/kerl/kerl.c",
          "entangled/common/crypto/kerl/converter.c",
          "entangled/common/crypto/kerl/bigint.c",
