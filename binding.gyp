@@ -9,7 +9,6 @@
          "entangled/common/helpers/pow.c",
          "entangled/common/helpers/sign.c",
          "entangled/common/helpers/digest.c",
-         "entangled/common/trinary/trit_ptrit.c",
          "entangled/common/trinary/trit_long.c",
          "entangled/common/trinary/ptrit_incr.c",
          "entangled/common/trinary/trit_tryte.c",
@@ -35,12 +34,16 @@
          "src/keccak/KeccakF-1600-reference.c",
       ],
       "cflags+": ["-std=gnu99"],
-      "include_dirs" : [
+      "include_dirs": [
          "<!(node -e \"require('nan')\")",
          "entangled",
          "src",
          "src/utarray",
          "src/embear"
+      ],
+      "defines": [
+        "PCURL_STATE_SHORT",
+        "PCURL_SBOX_UNWIND_4"
       ]
     }
   ]
