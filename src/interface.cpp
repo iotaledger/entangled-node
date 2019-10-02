@@ -148,7 +148,7 @@ static NAN_METHOD(genAddressTrits) {
   trit_t seed[243];
   v8::Local<v8::Array> trits = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < trits->Length(); i++) {
-    seed[i] = trits->Get(i)->NumberValue();
+    seed[i] = trits->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
 
@@ -214,7 +214,7 @@ static NAN_METHOD(genSignatureTrits) {
   trit_t seed[243];
   v8::Local<v8::Array> seed_array = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < seed_array->Length(); i++) {
-    seed[i] = seed_array->Get(i)->NumberValue();
+    seed[i] = seed_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
   uint64_t security =
@@ -222,7 +222,7 @@ static NAN_METHOD(genSignatureTrits) {
   trit_t bundle[243];
   v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[3]);
   for (size_t i = 0; i < bundle_array->Length(); i++) {
-    bundle[i] = bundle_array->Get(i)->NumberValue();
+    bundle[i] = bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
 
   trit_t *signature =
