@@ -39,6 +39,7 @@ const {
   const hash = await transactionHashFunc("TRYTES");
 
 })();
+```
 
 Generating binaries:
 ```
