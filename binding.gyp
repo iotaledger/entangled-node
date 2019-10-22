@@ -10,6 +10,7 @@
          "entangled/common/helpers/sign.c",
          "entangled/common/helpers/digest.c",
          "entangled/common/trinary/trit_long.c",
+         "entangled/common/trinary/trit_byte.c",
          "entangled/common/trinary/ptrit_incr.c",
          "entangled/common/trinary/trit_tryte.c",
          "entangled/common/trinary/flex_trit.c",
