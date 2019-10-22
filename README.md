@@ -40,14 +40,3 @@ const {
 
 })();
 ```
-
-Generating binaries:
-```
-git clone --recurse-submodules https://github.com/rihardsgravis/entangled-node.git
-cd entangled-node
-npm i
-# bump the version in package.json and package-lock.json
-Add a Github token with repo access
-export GITHUB_AUTH_TOKEN=XXX
-npm run prebuild
-```
