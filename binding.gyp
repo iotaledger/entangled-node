@@ -35,7 +35,15 @@
          "src/keccak/KeccakSpongeWidth1600.c",
          "src/keccak/KeccakHash.c",
       ],
-      "cflags+": ["-std=gnu99"],
+      "cflags+": ["-std=gnu99", "-msse2"],
+      "conditions": [
+          ['OS=="mac"', {
+            "xcode_settings": {
+              "GCC_C_LANGUAGE_STANDARD": "gnu99",
+              "OTHER_CFLAGS" : ["-msse2"],
+            },
+          }],
+        ],
       "include_dirs": [
          "<!(node -e \"require('nan')\")",
          "entangled",
@@ -45,7 +53,8 @@
       ],
       "defines": [
         "PCURL_STATE_SHORT",
-        "PCURL_SBOX_UNWIND_4"
+        "PCURL_SBOX_UNWIND_4",
+        "PTRIT_SSE2"
       ]
     }
   ]
