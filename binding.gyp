@@ -27,6 +27,7 @@
          "entangled/common/crypto/curl-p/ptrit.c",
          "entangled/common/crypto/curl-p/hashcash.c",
          "entangled/common/crypto/curl-p/pearl_diver.c",
+         "entangled/utils/bundle_miner.c",
          "entangled/utils/memset_safe.c",
          "entangled/utils/system.c",
          "entangled/utils/time.c",

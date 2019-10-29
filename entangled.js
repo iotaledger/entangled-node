@@ -126,6 +126,27 @@ const transactionHashFunc = (trytes) => {
 	})
 }
 
+/**
+ * Mines a bundle hash that minimizes the risks of a brute force signature forging attack
+ * @param {Int8Array} bundleNormalizedMax - Bundle hash created by taking the maximum of each bytes of each already signed bundle hashes
+ * @param {number} security - (optional) Target security
+ * @param {Int8Array} essence - Bundle essence
+ * @param {number} essenceLength - Bundle essence length
+ * @param {number} count - Iteration count
+ * @param {number} nprocs - Number of processors to run the miner on - 0 to use them all
+ * @returns {number} Best fitting index
+ **/
+const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs) => {
+	return new Promise((resolve, reject) => {
+		try {
+			const index = entangledApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0)
+			resolve(index)
+		} catch (err) {
+			reject(err)
+		}
+	})
+}
+
 module.exports = {
 	powTrytesFunc,
 	powBundleFunc,
@@ -134,4 +155,5 @@ module.exports = {
 	genSignatureTrytesFunc,
 	genSignatureTritsFunc,
 	transactionHashFunc,
+	bundleMiner
 }

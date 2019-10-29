@@ -5,7 +5,7 @@
 #include "common/helpers/digest.h"
 #include "common/helpers/pow.h"
 #include "common/helpers/sign.h"
-
+#include "utils/bundle_miner.h"
 #include "utils/memset_safe.h"
 
 static NAN_METHOD(powTrytes) {
@@ -121,12 +121,12 @@ static NAN_METHOD(genAddressTrytes) {
 
   if ((address = iota_sign_address_gen_trytes(cseed, index, security)) ==
       NULL) {
-    memset_safe((void*)cseed, 81, 0, 81);
+    memset_safe((void *)cseed, 81, 0, 81);
     Nan::ThrowError("Binding iota_sign_address_gen_trytes failed");
     return;
   }
 
-  memset_safe((void*)cseed, 81, 0, 81);
+  memset_safe((void *)cseed, 81, 0, 81);
 
   auto ret = Nan::New(address).ToLocalChecked();
   free(address);
@@ -154,7 +154,7 @@ static NAN_METHOD(genAddressTrits) {
 
   trit_t *address = iota_sign_address_gen_trits(seed, index, 2);
 
-  memset_safe((void*)seed, 243, 0, 243);
+  memset_safe((void *)seed, 243, 0, 243);
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(243);
   for (size_t i = 0; i < 243; i++) {
@@ -186,12 +186,12 @@ static NAN_METHOD(genSignatureTrytes) {
 
   if ((signature = iota_sign_signature_gen_trytes(cseed, index, security,
                                                   cbundle)) == NULL) {
-    memset_safe((void*)cseed, 81, 0, 81);
+    memset_safe((void *)cseed, 81, 0, 81);
     Nan::ThrowError("Binding iota_sign_signature_gen_trytes failed");
     return;
   }
 
-  memset_safe((void*)cseed, 81, 0, 81);
+  memset_safe((void *)cseed, 81, 0, 81);
 
   auto ret = Nan::New(signature).ToLocalChecked();
   free(signature);
@@ -214,7 +214,8 @@ static NAN_METHOD(genSignatureTrits) {
   trit_t seed[243];
   v8::Local<v8::Array> seed_array = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < seed_array->Length(); i++) {
-    seed[i] = seed_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+    seed[i] =
+        seed_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
   uint64_t security =
@@ -222,13 +223,14 @@ static NAN_METHOD(genSignatureTrits) {
   trit_t bundle[243];
   v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[3]);
   for (size_t i = 0; i < bundle_array->Length(); i++) {
-    bundle[i] = bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+    bundle[i] =
+        bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
 
   trit_t *signature =
       iota_sign_signature_gen_trits(seed, index, security, bundle);
 
-  memset_safe((void*)seed, 243, 0, 243);
+  memset_safe((void *)seed, 243, 0, 243);
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
@@ -264,6 +266,53 @@ static NAN_METHOD(transactionHash) {
   info.GetReturnValue().Set(ret);
 }
 
+static NAN_METHOD(bundleMiner) {
+  uint64_t index = 0;
+
+  if (info.Length() < 6) {
+    Nan::ThrowError("Wrong number of arguments");
+    return;
+  }
+
+  if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsArray() ||
+      !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber()) {
+    Nan::ThrowError("Wrong arguments");
+    return;
+  }
+
+  byte_t bundleNormalizedMax[81];
+  v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[0]);
+  for (size_t i = 0; i < bundle_array->Length(); i++) {
+    bundleNormalizedMax[i] =
+        bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+  }
+
+  uint64_t security =
+      static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
+  uint64_t essenceLength =
+      static_cast<uint64_t>(Nan::To<unsigned>(info[3]).FromJust());
+  trit_t *essence = (trit_t *)malloc(sizeof(trit_t) * essenceLength);
+  v8::Local<v8::Array> essence_array = v8::Local<v8::Array>::Cast(info[2]);
+  for (size_t i = 0; i < essence_array->Length(); i++) {
+    essence[i] =
+        essence_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+  }
+  uint64_t count = static_cast<uint64_t>(Nan::To<unsigned>(info[4]).FromJust());
+  uint64_t nprocs =
+      static_cast<uint64_t>(Nan::To<unsigned>(info[5]).FromJust());
+
+  if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
+                        count, nprocs, &index) != RC_OK) {
+    info.GetReturnValue().Set(-1);
+    free(essence);
+    Nan::ThrowError("Bundle mining failed");
+    return;
+  }
+
+  info.GetReturnValue().Set(static_cast<uint32_t>(index));
+  free(essence);
+}
+
 NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, powTrytes);
   NAN_EXPORT(target, powBundle);
@@ -272,6 +321,7 @@ NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, genSignatureTrytes);
   NAN_EXPORT(target, genSignatureTrits);
   NAN_EXPORT(target, transactionHash);
+  NAN_EXPORT(target, bundleMiner);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
