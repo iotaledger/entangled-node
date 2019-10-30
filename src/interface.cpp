@@ -289,7 +289,7 @@ static NAN_METHOD(bundleMiner) {
 
   uint8_t security =
       static_cast<uint8_t>(Nan::To<unsigned>(info[1]).FromJust());
-  uint64_t essenceLength =
+  size_t essenceLength =
       static_cast<uint64_t>(Nan::To<unsigned>(info[3]).FromJust());
   trit_t *essence = (trit_t *)malloc(sizeof(trit_t) * essenceLength);
   v8::Local<v8::Array> essence_array = v8::Local<v8::Array>::Cast(info[2]);
