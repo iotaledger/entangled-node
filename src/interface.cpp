@@ -287,7 +287,7 @@ static NAN_METHOD(bundleMiner) {
         bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
 
-  uint64_t security =
+  uint8_t security =
       static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
   uint64_t essenceLength =
       static_cast<uint64_t>(Nan::To<unsigned>(info[3]).FromJust());
