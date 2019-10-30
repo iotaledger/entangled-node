@@ -299,7 +299,7 @@ static NAN_METHOD(bundleMiner) {
   }
   uint64_t count = static_cast<uint64_t>(Nan::To<unsigned>(info[4]).FromJust());
   uint8_t nprocs =
-      static_cast<uint64_t>(Nan::To<unsigned>(info[5]).FromJust());
+      static_cast<uint8_t>(Nan::To<unsigned>(info[5]).FromJust());
 
   if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
                         count, nprocs, &index) != RC_OK) {
