@@ -298,7 +298,7 @@ static NAN_METHOD(bundleMiner) {
         essence_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t count = static_cast<uint64_t>(Nan::To<unsigned>(info[4]).FromJust());
-  uint64_t nprocs =
+  uint8_t nprocs =
       static_cast<uint64_t>(Nan::To<unsigned>(info[5]).FromJust());
 
   if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
