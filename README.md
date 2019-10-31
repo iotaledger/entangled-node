@@ -1,7 +1,7 @@
 # Entangled node
 [![Build Status](https://travis-ci.org/rihardsgravis/entangled-node.svg?branch=master)](https://travis-ci.org/rihardsgravis/entangled-node)
 
-[IOTA Entangled](https://github.com/iotaledger/entangled) native Node.js module bindings, exposing functions for Proof of Work,  address generation and signature generation.
+[IOTA Entangled](https://github.com/iotaledger/entangled) native Node.js module bindings, exposing functions for Proof of Work, address generation, signature generation and bundle mining.
 
 Usage:
 
@@ -13,7 +13,8 @@ const {
   genAddressTritsFunc,
   genSignatureTrytesFunc,
   genSignatureTritsFunc,
-  transactionHashFunc } = require('entangled-node');
+  transactionHashFunc,
+  bundleMiner } = require('entangled-node');
 
 (async () => {
 
@@ -37,6 +38,9 @@ const {
 
   // Transaction hash
   const hash = await transactionHashFunc("TRYTES");
+
+  // Bundle miner
+  const index = await bundleMiner([-6, 4, ..., 8, -9], 2, [0, -1, ..., 1, 1], 486 * 4, 1000000, 0);
 
 })();
 ```
