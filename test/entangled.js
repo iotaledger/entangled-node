@@ -161,14 +161,15 @@ describe('Entangled.bundleMiner', function() {
 			essenceLength: 486 * 4,
 			count: 1000,
 			index: 561,
-			nprocs: 0
+			nprocs: 0,
+			miningThreshold: 10 ** 3
 		}
 	]
 
 	tests.forEach(function(test) {
 		it(`Mined index should be: ` + test.index, async function() {
 			this.timeout(0)
-			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs)
+			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs, test.miningThreshold)
 			assert.equal(test.index, index)
 		})
 	})
