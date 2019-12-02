@@ -269,13 +269,14 @@ static NAN_METHOD(transactionHash) {
 static NAN_METHOD(bundleMiner) {
   uint64_t index = 0;
 
-  if (info.Length() < 6) {
+  if (info.Length() < 7) {
     Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsArray() ||
-      !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber()) {
+      !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber() || 
+      !info[6]->IsNumber()) {
     Nan::ThrowError("Wrong arguments");
     return;
   }
