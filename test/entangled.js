@@ -162,7 +162,7 @@ describe('Entangled.bundleMiner', function() {
 			count: 1000,
 			index: 561,
 			nprocs: 0,
-			miningThreshold: 40
+			miningThreshold: 3**40
 		}
 	]
 
