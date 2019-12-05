@@ -134,12 +134,14 @@ const transactionHashFunc = (trytes) => {
  * @param {number} essenceLength - Bundle essence length
  * @param {number} count - Iteration count
  * @param {number} nprocs - Number of processors to run the miner on - 0 to use them all
+ * @param {number} miningThreshold
+ * 
  * @returns {number} Best fitting index
  **/
-const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs) => {
+const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs, miningThreshold) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const index = entangledApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0)
+			const index = entangledApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0, miningThreshold)
 			resolve(index)
 		} catch (err) {
 			reject(err)
