@@ -1,6 +1,6 @@
 {
 	"name": "entangled-node",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "IOTA Entangled node bindings",
 	"main": "entangled.js",
 	"scripts": {
