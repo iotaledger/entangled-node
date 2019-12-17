@@ -32,9 +32,9 @@
          "entangled/utils/memset_safe.c",
          "entangled/utils/system.c",
          "entangled/utils/time.c",
-         "src/keccak/KeccakP-1600-reference.c",
-         "src/keccak/KeccakSpongeWidth1600.c",
          "src/keccak/KeccakHash.c",
+         "src/keccak/KeccakSponge.c",
+         "src/keccak/KeccakF-1600-reference.c",
       ],
       "cflags+": ["-std=gnu99", "-msse2"],
       "conditions": [
