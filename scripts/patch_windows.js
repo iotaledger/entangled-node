@@ -171,7 +171,7 @@ if (isWindows) {
                         const fileToRename = FILES_TO_RENAME.find((object) => path.includes(object.old));
 
                         if (fileToRename) {
-                            const newPath = path.split(JSON.parse(JSON.stringify(fileToRename.old))).join(fileToRename.new);
+                            const newPath = path.split(fileToRename.old).join(fileToRename.new);
                             return renameAsync(path, newPath);
                         }
                     });
