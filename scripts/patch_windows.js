@@ -152,7 +152,7 @@ const isWindows = __PLATFORM__ === 'win32';
 
 
 if (isWindows) {
-    getFilePaths(__dirname).then((filenames) => {
+    getFilePaths(process.cwd()).then((filenames) => {
         const paths = filenames.filter((filename, index) => {
             return filenames.indexOf(filename) == index;
         });
