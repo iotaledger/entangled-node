@@ -16,6 +16,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@master
+              with:
+                  submodules: recursive
             - name: Use Node.js 10.x
               uses: actions/setup-node@master
               with:
@@ -28,6 +30,3 @@ jobs:
               env:
                   CI: true
                   GITHUB_AUTH_TOKEN: ${{secrets.GITHUB_AUTH_TOKEN}}
-
-
-                  
