@@ -4,6 +4,7 @@
 	"description": "IOTA Entangled node bindings",
 	"main": "entangled.js",
 	"scripts": {
+		"preinstall": "node scripts/patch_windows.js",
 		"install": "prebuild-install || node-gyp rebuild",
 		"test": "mocha test/entangled.js",
 		"rebuild": "prebuild --compile",
