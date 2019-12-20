@@ -15,7 +15,7 @@ jobs:
         runs-on: ${{ matrix.os }}
 
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v1
               with:
                   submodules: recursive
             - name: Use Node.js 10.x
