@@ -1,4 +1,4 @@
-const entangledApi = require('./build/Release/entangled.node')
+const iotaCommonApi = require('./build/Release/iota_common.node')
 
 /**
  * Do Proof of Work on trytes
@@ -9,7 +9,7 @@ const entangledApi = require('./build/Release/entangled.node')
 const powTrytesFunc = (trytes, mwm) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const pow = entangledApi.powTrytes(trytes, mwm || 14)
+			const pow = iotaCommonApi.powTrytes(trytes, mwm || 14)
 			resolve(pow)
 		} catch (err) {
 			reject(err)
@@ -28,7 +28,7 @@ const powTrytesFunc = (trytes, mwm) => {
 const powBundleFunc = (trytes, trunk, branch, mwm) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const transactions = entangledApi.powBundle(trytes, trunk, branch, mwm || 14)
+			const transactions = iotaCommonApi.powBundle(trytes, trunk, branch, mwm || 14)
 			resolve(transactions)
 		} catch (err) {
 			reject(err)
@@ -46,7 +46,7 @@ const powBundleFunc = (trytes, trunk, branch, mwm) => {
 const genAddressTrytesFunc = (seed, index, security) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const address = entangledApi.genAddressTrytes(seed, index, security || 2)
+			const address = iotaCommonApi.genAddressTrytes(seed, index, security || 2)
 			resolve(address)
 		} catch (err) {
 			reject(err)
@@ -64,7 +64,7 @@ const genAddressTrytesFunc = (seed, index, security) => {
 const genAddressTritsFunc = (seed, index, security) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const address = entangledApi.genAddressTrits(seed, index, security || 2)
+			const address = iotaCommonApi.genAddressTrits(seed, index, security || 2)
 			resolve(address)
 		} catch (err) {
 			reject(err)
@@ -83,7 +83,7 @@ const genAddressTritsFunc = (seed, index, security) => {
 const genSignatureTrytesFunc = (seed, index, security, bundle) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const signature = entangledApi.genSignatureTrytes(seed, index, security || 2, bundle)
+			const signature = iotaCommonApi.genSignatureTrytes(seed, index, security || 2, bundle)
 			resolve(signature)
 		} catch (err) {
 			reject(err)
@@ -102,7 +102,7 @@ const genSignatureTrytesFunc = (seed, index, security, bundle) => {
 const genSignatureTritsFunc = (seed, index, security, bundle) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const signature = entangledApi.genSignatureTrits(seed, index, security || 2, bundle)
+			const signature = iotaCommonApi.genSignatureTrits(seed, index, security || 2, bundle)
 			resolve(signature)
 		} catch (err) {
 			reject(err)
@@ -118,7 +118,7 @@ const genSignatureTritsFunc = (seed, index, security, bundle) => {
 const transactionHashFunc = (trytes) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const hash = entangledApi.transactionHash(trytes)
+			const hash = iotaCommonApi.transactionHash(trytes)
 			resolve(hash)
 		} catch (err) {
 			reject(err)
@@ -135,13 +135,13 @@ const transactionHashFunc = (trytes) => {
  * @param {number} count - Iteration count
  * @param {number} nprocs - Number of processors to run the miner on - 0 to use them all
  * @param {number} miningThreshold
- * 
+ *
  * @returns {number} Best fitting index
  **/
 const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs, miningThreshold) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const index = entangledApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0, miningThreshold)
+			const index = iotaCommonApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0, miningThreshold)
 			resolve(index)
 		} catch (err) {
 			reject(err)
