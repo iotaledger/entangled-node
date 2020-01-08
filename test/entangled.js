@@ -164,7 +164,7 @@ describe('Entangled.bundleMiner', function() {
 	]
 
 	tests.forEach(function(test) {
-		it(`Mined index should be one of` + test.indexes.join(','), async function() {
+		it(`Mined index should be one of ` + test.indexes.join(','), async function() {
 			this.timeout(0)
 			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs, test.miningThreshold)
 			assert.include(test.indexes, index)
