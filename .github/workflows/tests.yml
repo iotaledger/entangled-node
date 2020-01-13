@@ -9,7 +9,9 @@ jobs:
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Use Node.js 12.x
       uses: actions/setup-node@master
       with:
