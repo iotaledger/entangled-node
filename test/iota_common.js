@@ -152,25 +152,22 @@ describe('IotaCommon.transactionHashFunc', function() {
 describe('IotaCommon.bundleMiner', function() {
 	const tests = [
 		{
-			max: [13, 13, 13, 13, 13, 11, -7,  -3, 6, 4,  9,  11, 13, -7, 5,  5,  9, -9, 1,  5,  -4,
-				  9,  0,  -8, -9, 6,  10, 13,  11, 8, 2,  7,  13, 1,  6,  -1, 6,  7, 6,  7,  11, 4,
-			      -1, 4,  -3, 11, -8, 6,  -1,  1,  0, 1,  10, 8,  13, 13, 1,  2,  7, 7,  11, 9,  10,
-				  1,  -5, 1,  12, 11, 13, -10, 12, 5, 12, 0,  -5, 2,  -8, 6,  11, 6, 5],
+			max: new Array(2 * 27).fill(0),
 			security: 2,
 			essence: Array(486 * 4).fill(0),
 			essenceLength: 486 * 4,
-			count: 1000,
-			index: 561,
+			count: 10 ** 6,
+			indexes: [500014, 416765],
 			nprocs: 0,
-			miningThreshold: 3**40
-		}
+			miningThreshold: 10 // 40 is the correct threshold for sec. lvl 2, 10 gets this test run faster
+        }
 	]
 
 	tests.forEach(function(test) {
-		it(`Mined index should be: ` + test.index, async function() {
+		it(`Mined index should be one of ` + test.indexes.join(','), async function() {
 			this.timeout(0)
 			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs, test.miningThreshold)
-			assert.equal(test.index, index)
+			assert.include(test.indexes, index)
 		})
 	})
 })
