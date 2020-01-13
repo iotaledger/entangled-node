@@ -1,7 +1,7 @@
 # Entangled node
 [![Build Status](https://travis-ci.org/rihardsgravis/entangled-node.svg?branch=master)](https://travis-ci.org/rihardsgravis/entangled-node)
 
-[IOTA Entangled](https://github.com/iotaledger/entangled) native Node.js module bindings, exposing functions for Proof of Work, address generation, signature generation and bundle mining.
+[IOTA Common](https://github.com/iotaledger/iota_common) native Node.js module bindings, exposing functions for Proof of Work, address generation, signature generation and bundle mining.
 
 Usage:
 
