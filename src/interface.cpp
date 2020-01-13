@@ -275,7 +275,7 @@ static NAN_METHOD(bundleMiner) {
   }
 
   if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsArray() ||
-      !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber() || 
+      !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber() ||
       !info[6]->IsNumber()) {
     Nan::ThrowError("Wrong arguments");
     return;
@@ -299,11 +299,10 @@ static NAN_METHOD(bundleMiner) {
         essence_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint32_t count = static_cast<uint32_t>(Nan::To<unsigned>(info[4]).FromJust());
-  uint8_t nprocs =
-      static_cast<uint8_t>(Nan::To<unsigned>(info[5]).FromJust());
-  
-  uint32_t miningThreshold = static_cast<uint32_t>(Nan::To<unsigned>(info[6]).FromJust());
+  uint8_t nprocs = static_cast<uint8_t>(Nan::To<unsigned>(info[5]).FromJust());
 
+  uint32_t miningThreshold =
+      static_cast<uint32_t>(Nan::To<unsigned>(info[6]).FromJust());
 
   if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
                         count, nprocs, miningThreshold, &index) != RC_OK) {
