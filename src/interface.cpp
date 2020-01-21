@@ -304,7 +304,7 @@ static NAN_METHOD(bundleMiner) {
   uint32_t miningThreshold =
       static_cast<uint32_t>(Nan::To<unsigned>(info[6]).FromJust());
 
-  uint8_t fullySecure = static_cast<uint32_t>(Nan::To<unsigned>(info[7]).FromJust());
+  uint8_t fullySecure = static_cast<uint8_t>(Nan::To<unsigned>(info[7]).FromJust());
 
   if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
                         count, nprocs, miningThreshold, fullySecure == 1 ? true : false, &index) != RC_OK) {
