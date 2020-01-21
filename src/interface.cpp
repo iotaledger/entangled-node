@@ -269,14 +269,14 @@ static NAN_METHOD(transactionHash) {
 static NAN_METHOD(bundleMiner) {
   uint64_t index = 0;
 
-  if (info.Length() < 7) {
+  if (info.Length() != 8) {
     Nan::ThrowError("Wrong number of arguments");
     return;
   }
 
   if (!info[0]->IsArray() || !info[1]->IsNumber() || !info[2]->IsArray() ||
       !info[3]->IsNumber() || !info[4]->IsNumber() || !info[5]->IsNumber() ||
-      !info[6]->IsNumber()) {
+      !info[6]->IsNumber() || !info[7]->IsNumber()) {
     Nan::ThrowError("Wrong arguments");
     return;
   }
@@ -304,8 +304,10 @@ static NAN_METHOD(bundleMiner) {
   uint32_t miningThreshold =
       static_cast<uint32_t>(Nan::To<unsigned>(info[6]).FromJust());
 
+  uint8_t fullySecure = static_cast<uint32_t>(Nan::To<unsigned>(info[7]).FromJust());
+
   if (bundle_miner_mine(bundleNormalizedMax, security, essence, essenceLength,
-                        count, nprocs, miningThreshold, &index) != RC_OK) {
+                        count, nprocs, miningThreshold, fullySecure == 1 ? true : false, &index) != RC_OK) {
     info.GetReturnValue().Set(-1);
     free(essence);
     Nan::ThrowError("Bundle mining failed");

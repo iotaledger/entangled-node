@@ -159,14 +159,15 @@ describe('IotaCommon.bundleMiner', function() {
 			count: 10 ** 6,
 			indexes: [500014, 416765],
 			nprocs: 0,
-			miningThreshold: 10 // 40 is the correct threshold for sec. lvl 2, 10 gets this test run faster
+			miningThreshold: 10, // 40 is the correct threshold for sec. lvl 2, 10 gets this test run faster
+			fullySecure: 0,
         }
 	]
 
 	tests.forEach(function(test) {
 		it(`Mined index should be one of ` + test.indexes.join(','), async function() {
 			this.timeout(0)
-			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs, test.miningThreshold)
+			const index = await bundleMiner(test.max, test.security, test.essence, test.essenceLength, test.count, test.nprocs, test.miningThreshold, test.fullySecure)
 			assert.include(test.indexes, index)
 		})
 	})

@@ -135,13 +135,13 @@ const transactionHashFunc = (trytes) => {
  * @param {number} count - Iteration count
  * @param {number} nprocs - Number of processors to run the miner on - 0 to use them all
  * @param {number} miningThreshold
- *
+ * @param {number} fullySecure - Flag indicating if 13s are allowed in non-signed normalized fragments. This enables Ledger support.
  * @returns {number} Best fitting index
  **/
-const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs, miningThreshold) => {
+const bundleMiner = (bundleNormalizedMax, security, essence, essenceLength, count, nprocs, miningThreshold, fullySecure) => {
 	return new Promise((resolve, reject) => {
 		try {
-			const index = iotaCommonApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0, miningThreshold)
+			const index = iotaCommonApi.bundleMiner(bundleNormalizedMax, security || 2, essence, essenceLength, count, nprocs || 0, miningThreshold, fullySecure)
 			resolve(index)
 		} catch (err) {
 			reject(err)
