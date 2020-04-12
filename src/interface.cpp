@@ -71,7 +71,7 @@ static NAN_METHOD(powBundle) {
   for (size_t i = 0; i < txNum; i++) {
     flex_trits_from_trytes(
         serializedFlexTrits, NUM_TRITS_SERIALIZED_TRANSACTION,
-        (tryte_t *)(*Nan::Utf8String(txsTrytes->Get(i).As<v8::String>())),
+        (tryte_t *)(*Nan::Utf8String(txsTrytes->Get(Nan::GetCurrentContext(), i).ToLocalChecked().As<v8::String>())),
         NUM_TRYTES_SERIALIZED_TRANSACTION, NUM_TRYTES_SERIALIZED_TRANSACTION);
     transaction_deserialize_from_trits(&tx, serializedFlexTrits, false);
     bundle_transactions_add(bundle, &tx);
@@ -93,7 +93,7 @@ static NAN_METHOD(powBundle) {
                          NUM_TRYTES_SERIALIZED_TRANSACTION, serializedFlexTrits,
                          NUM_TRITS_SERIALIZED_TRANSACTION,
                          NUM_TRITS_SERIALIZED_TRANSACTION);
-    ret->Set(i,
+    ret->Set(Nan::GetCurrentContext(), i,
              Nan::New<v8::String>((char *)serializedTrytes).ToLocalChecked());
     i++;
   }
@@ -148,7 +148,7 @@ static NAN_METHOD(genAddressTrits) {
   trit_t seed[243];
   v8::Local<v8::Array> trits = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < trits->Length(); i++) {
-    seed[i] = trits->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+    seed[i] = trits->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
 
@@ -158,7 +158,7 @@ static NAN_METHOD(genAddressTrits) {
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(243);
   for (size_t i = 0; i < 243; i++) {
-    ret->Set(i, Nan::New(address[i]));
+    ret->Set(Nan::GetCurrentContext(), i, Nan::New(address[i]));
   };
 
   info.GetReturnValue().Set(ret);
@@ -215,7 +215,7 @@ static NAN_METHOD(genSignatureTrits) {
   v8::Local<v8::Array> seed_array = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < seed_array->Length(); i++) {
     seed[i] =
-        seed_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+        seed_array->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint64_t index = static_cast<uint64_t>(Nan::To<unsigned>(info[1]).FromJust());
   uint64_t security =
@@ -224,7 +224,7 @@ static NAN_METHOD(genSignatureTrits) {
   v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[3]);
   for (size_t i = 0; i < bundle_array->Length(); i++) {
     bundle[i] =
-        bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+        bundle_array->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
 
   trit_t *signature =
@@ -234,7 +234,7 @@ static NAN_METHOD(genSignatureTrits) {
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
-    ret->Set(i, Nan::New(signature[i]));
+    ret->Set(Nan::GetCurrentContext(), i, Nan::New(signature[i]));
   };
 
   info.GetReturnValue().Set(ret);
@@ -285,7 +285,7 @@ static NAN_METHOD(bundleMiner) {
   v8::Local<v8::Array> bundle_array = v8::Local<v8::Array>::Cast(info[0]);
   for (size_t i = 0; i < bundle_array->Length(); i++) {
     bundleNormalizedMax[i] =
-        bundle_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+        bundle_array->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
 
   uint8_t security =
@@ -296,7 +296,7 @@ static NAN_METHOD(bundleMiner) {
   v8::Local<v8::Array> essence_array = v8::Local<v8::Array>::Cast(info[2]);
   for (size_t i = 0; i < essence_array->Length(); i++) {
     essence[i] =
-        essence_array->Get(i)->NumberValue(Nan::GetCurrentContext()).FromJust();
+        essence_array->Get(Nan::GetCurrentContext(), i).ToLocalChecked()->NumberValue(Nan::GetCurrentContext()).FromJust();
   }
   uint32_t count = static_cast<uint32_t>(Nan::To<unsigned>(info[4]).FromJust());
   uint8_t nprocs = static_cast<uint8_t>(Nan::To<unsigned>(info[5]).FromJust());
