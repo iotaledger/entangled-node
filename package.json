@@ -9,7 +9,7 @@
 		"test": "mocha test/iota_common.js",
 		"rebuild": "prebuild --compile",
 		"prebuild-node": "prebuild -t 8.12.0 -t 9.4.0 -t 10.11.0 -t 12.14.0 --strip",
-		"prebuild-electron": "prebuild -t 4.2.3 -t 5.0.12 -t 6.1.5 -r electron --strip",
+		"prebuild-electron": "prebuild -t 4.2.3 -t 6.1.5 -t 8.2.1 -r electron --strip",
 		"prebuild": "npm run prebuild-node && npm run prebuild-electron && node ./src/upload.js"
 	},
 	"repository": {
