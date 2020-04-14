@@ -94,7 +94,7 @@ static NAN_METHOD(powBundle) {
                          NUM_TRITS_SERIALIZED_TRANSACTION,
                          NUM_TRITS_SERIALIZED_TRANSACTION);
     ret->Set(Nan::GetCurrentContext(), i,
-             Nan::New<v8::String>((char *)serializedTrytes).ToLocalChecked());
+             Nan::New<v8::String>((char *)serializedTrytes).ToLocalChecked()).FromJust();
     i++;
   }
   bundle_transactions_free(&bundle);
@@ -158,7 +158,7 @@ static NAN_METHOD(genAddressTrits) {
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(243);
   for (size_t i = 0; i < 243; i++) {
-    ret->Set(Nan::GetCurrentContext(), i, Nan::New(address[i]));
+    ret->Set(Nan::GetCurrentContext(), i, Nan::New(address[i])).FromJust();
   };
 
   info.GetReturnValue().Set(ret);
@@ -234,7 +234,7 @@ static NAN_METHOD(genSignatureTrits) {
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
-    ret->Set(Nan::GetCurrentContext(), i, Nan::New(signature[i]));
+    ret->Set(Nan::GetCurrentContext(), i, Nan::New(signature[i])).FromJust();
   };
 
   info.GetReturnValue().Set(ret);
