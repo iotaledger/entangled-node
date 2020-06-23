@@ -22,7 +22,7 @@ const {
   const pow = await powTrytesFunc("TRYTES", 14);
 
   // Do Proof of Work on a bundle
-  const transactions = await powBundleFunc({"TRYTES1", "TRYTES2", "TRYTES3"}, "TRUNK", "BRANCH", 14);
+  const transactions = await powBundleFunc(["TRYTES1", "TRYTES2", "TRYTES3"], "TRUNK", "BRANCH", 14);
 
   // Generate address trytes
   const addressTrytes = await genAddressTrytesFunc("SEED", 0, 2);
