@@ -36,17 +36,21 @@
          "src/keccak/KeccakSpongeWidth1600.c",
          "src/keccak/KeccakHash.c",
       ],
-      "cflags+": ["-std=gnu99", "-msse2"],
+      "cflags+": ["-std=gnu99", "-msse2", "-fno-exceptions"],
+      "cflags_cc+": ["-fno-exceptions"],
       "conditions": [
           ['OS=="mac"', {
+            "cflags+": ["-fvisibility=hidden"],
             "xcode_settings": {
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
               "GCC_C_LANGUAGE_STANDARD": "gnu99",
+              "GCC_SYMBOLS_PRIVATE_EXTERN": "YES", # -fvisibility=hidden
               "OTHER_CFLAGS" : ["-msse2"],
             },
           }],
         ],
       "include_dirs": [
-         "<!(node -e \"require('nan')\")",
+         "<!@(node -p \"require('node-addon-api').include\")",
          "iota_common",
          "src",
          "src/utarray",
