@@ -1,3 +1,0 @@
-[submodule "iota_common"]
-	path = iota_common
-	url = https://github.com/iotaledger/iota_common.git
