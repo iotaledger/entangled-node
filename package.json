@@ -25,6 +25,7 @@
 	"homepage": "https://github.com/iotaledger/entangled-node#readme",
 	"devDependencies": {
 		"chai": "^4.2.0",
+		"cmake-js": "^6.1.0",
 		"mocha": "^7.1.1",
 		"node-abi": "^2.15.0",
 		"prebuild": "^10.0.0"
