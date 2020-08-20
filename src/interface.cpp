@@ -10,6 +10,7 @@
 #include "utils/memset_safe.h"
 
 static Napi::Value powTrytes(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 2) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -23,20 +24,21 @@ static Napi::Value powTrytes(const Napi::CallbackInfo& info) {
   char *nonce = NULL;
   std::string trytes(info[0].As<Napi::String>().Utf8Value().c_str());
   auto ctrytes = trytes.c_str();
-  auto mwm = static_cast<uint8_t>(Napi::To<unsigned>(info[1]));
+  auto mwm = static_cast<uint8_t>(Napi::Number(env, info[1]).Uint32Value());
 
   if ((nonce = iota_pow_trytes(ctrytes, mwm)) == NULL) {
     Napi::Error::New(env, "Binding iota_pow_trytes failed").ThrowAsJavaScriptException();
     return env.Null();
   }
 
-  auto ret = Napi::New(env, nonce);
+  auto ret = Napi::String::New(env, nonce);
   free(nonce);
 
   return ret;
 }
 
 static Napi::Value powBundle(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 4) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -64,17 +66,18 @@ static Napi::Value powBundle(const Napi::CallbackInfo& info) {
   bundle_transactions_new(&bundle);
 
   Napi::Array txsTrytes = info[0].As<Napi::Array>();
-  size_t txNum = txsTrytes->Length();
+  size_t txNum = txsTrytes.Length();
   for (size_t i = 0; i < txNum; i++) {
+    Napi::Value txTrytes = txsTrytes[i];
     flex_trits_from_trytes(
         serializedFlexTrits, NUM_TRITS_SERIALIZED_TRANSACTION,
-        (tryte_t *)(txsTrytes->Get(Napi::GetCurrentContext(->As<Napi::String>().Utf8Value().c_str(), i).As<Napi::String>())),
+        (tryte_t *)txTrytes.As<Napi::String>().Utf8Value().c_str(),
         NUM_TRYTES_SERIALIZED_TRANSACTION, NUM_TRYTES_SERIALIZED_TRANSACTION);
     transaction_deserialize_from_trits(&tx, serializedFlexTrits, false);
     bundle_transactions_add(bundle, &tx);
   }
 
-  auto mwm = static_cast<uint8_t>(Napi::To<unsigned>(info[3]));
+  auto mwm = static_cast<uint8_t>(Napi::Number(env, info[3]).Uint32Value());
 
   if (iota_pow_bundle(bundle, flexTrunk, flexBranch, mwm) != RC_OK) {
     bundle_transactions_free(&bundle);
@@ -88,7 +91,7 @@ static Napi::Value powBundle(const Napi::CallbackInfo& info) {
     transaction_serialize_on_flex_trits(curTx, serializedFlexTrits);
     flex_trits_to_trytes((tryte_t *)serializedTrytes, NUM_TRYTES_SERIALIZED_TRANSACTION, serializedFlexTrits,
                          NUM_TRITS_SERIALIZED_TRANSACTION, NUM_TRITS_SERIALIZED_TRANSACTION);
-    ret.Set(Napi::GetCurrentContext(), i, Napi::String::New(env, (char *)serializedTrytes));
+    ret[i] = Napi::String::New(env, (char *)serializedTrytes);
     i++;
   }
   bundle_transactions_free(&bundle);
@@ -97,6 +100,7 @@ static Napi::Value powBundle(const Napi::CallbackInfo& info) {
 }
 
 static Napi::Value genAddressTrytes(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 3) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -108,10 +112,9 @@ static Napi::Value genAddressTrytes(const Napi::CallbackInfo& info) {
   }
 
   char *address = NULL;
-  std::string seed(info[0].As<Napi::String>().Utf8Value().c_str());
-  auto cseed = seed.c_str();
-  auto index = static_cast<uint64_t>(Napi::To<unsigned>(info[1]));
-  auto security = static_cast<uint64_t>(Napi::To<unsigned>(info[2]));
+  auto cseed = info[0].As<Napi::String>().Utf8Value().c_str();
+  auto index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
+  auto security = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
 
   if ((address = iota_sign_address_gen_trytes(cseed, index, security)) == NULL) {
     memset_safe((void *)cseed, 81, 0, 81);
@@ -121,13 +124,14 @@ static Napi::Value genAddressTrytes(const Napi::CallbackInfo& info) {
 
   memset_safe((void *)cseed, 81, 0, 81);
 
-  auto ret = Napi::New(env, address);
+  auto ret = Napi::String::New(env, address);
   free(address);
 
   return ret;
 }
 
 static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 3) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -139,12 +143,11 @@ static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
   }
 
   trit_t seed[243];
-  Napi::Array trits = info[0].As<Napi::Array>();
-  for (size_t i = 0; i < trits->Length(); i++) {
-    seed[i] =
-        trits->Get(Napi::GetCurrentContext(), i)->NumberValue(Napi::GetCurrentContext());
+  Napi::Int8Array trits = info[0].As<Napi::Int8Array>();
+  for (size_t i = 0; i < trits.ElementLength(); i++) {
+    seed[i] = trits[i];
   }
-  uint64_t index = static_cast<uint64_t>(Napi::To<unsigned>(info[1]));
+  auto index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
 
   trit_t *address = iota_sign_address_gen_trits(seed, index, 2);
 
@@ -159,6 +162,7 @@ static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
 }
 
 static Napi::Value genSignatureTrytes(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 4) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -192,6 +196,7 @@ static Napi::Value genSignatureTrytes(const Napi::CallbackInfo& info) {
 }
 
 static Napi::Value genSignatureTrits(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 4) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -232,6 +237,7 @@ static Napi::Value genSignatureTrits(const Napi::CallbackInfo& info) {
 }
 
 static Napi::Value transactionHash(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 1) {
     Napi::Error::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return env.Null();
@@ -258,6 +264,7 @@ static Napi::Value transactionHash(const Napi::CallbackInfo& info) {
 }
 
 static Napi::Value bundleMiner(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   uint64_t index = 0;
 
   if (info.Length() != 8) {
