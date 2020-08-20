@@ -153,9 +153,9 @@ static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
 
   memset_safe((void *)seed, 243, 0, 243);
 
-  Napi::Array ret = Napi::Array::New(env, 243);
+  Napi::Int8Array ret = Napi::Int8Array::New(env, 243);
   for (size_t i = 0; i < 243; i++) {
-    ret.Set(Napi::GetCurrentContext(), i, Napi::New(env, address[i]));
+    ret[i] = address[i];
   };
 
   return ret;
@@ -174,12 +174,10 @@ static Napi::Value genSignatureTrytes(const Napi::CallbackInfo& info) {
   }
 
   char *signature = NULL;
-  std::string seed(info[0].As<Napi::String>().Utf8Value().c_str());
-  auto cseed = seed.c_str();
-  auto index = static_cast<uint64_t>(Napi::To<unsigned>(info[1]));
-  auto security = static_cast<uint64_t>(Napi::To<unsigned>(info[2]));
-  std::string bundle(info[3].As<Napi::String>().Utf8Value().c_str());
-  auto cbundle = bundle.c_str();
+  auto cseed = info[0].As<Napi::String>().Utf8Value().c_str();
+  auto index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
+  auto security = static_cast<uint64_t>(Napi::Number(env, info[2]).Uint32Value());
+  auto cbundle = info[3].As<Napi::String>().Utf8Value().c_str();
 
   if ((signature = iota_sign_signature_gen_trytes(cseed, index, security, cbundle)) == NULL) {
     memset_safe((void *)cseed, 81, 0, 81);
@@ -189,7 +187,7 @@ static Napi::Value genSignatureTrytes(const Napi::CallbackInfo& info) {
 
   memset_safe((void *)cseed, 81, 0, 81);
 
-  auto ret = Napi::New(env, signature);
+  auto ret = Napi::String::New(env, signature);
   free(signature);
 
   return ret;
@@ -208,29 +206,25 @@ static Napi::Value genSignatureTrits(const Napi::CallbackInfo& info) {
   }
 
   trit_t seed[243];
-  Napi::Array seed_array = info[0].As<Napi::Array>();
-  for (size_t i = 0; i < seed_array->Length(); i++) {
-    seed[i] =
-        seed_array->Get(Napi::GetCurrentContext(), i)->NumberValue(Napi::GetCurrentContext());
+  Napi::Int8Array seed_array = info[0].As<Napi::Int8Array>();
+  for (size_t i = 0; i < seed_array.ElementLength(); i++) {
+    seed[i] = seed_array[i];
   }
-  uint64_t index = static_cast<uint64_t>(Napi::To<unsigned>(info[1]));
-  uint64_t security = static_cast<uint64_t>(Napi::To<unsigned>(info[2]));
+  uint64_t index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
+  uint64_t security = static_cast<uint64_t>(Napi::Number(env, info[2]).Uint32Value());;
   trit_t bundle[243];
-  Napi::Array bundle_array = info[3].As<Napi::Array>();
-  for (size_t i = 0; i < bundle_array->Length(); i++) {
-    bundle[i] = bundle_array->Get(Napi::GetCurrentContext(), i)
-                    
-                    ->NumberValue(Napi::GetCurrentContext())
-                    ;
+  Napi::Int8Array bundle_array = info[3].As<Napi::Int8Array>();
+  for (size_t i = 0; i < bundle_array.ElementLength(); i++) {
+    bundle[i] = bundle_array[i];
   }
 
   trit_t *signature = iota_sign_signature_gen_trits(seed, index, security, bundle);
 
   memset_safe((void *)seed, 243, 0, 243);
 
-  Napi::Array ret = Napi::Array::New(env, 6561 * security);
+  Napi::Int8Array ret = Napi::Int8Array::New(env, 6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
-    ret.Set(Napi::GetCurrentContext(), i, Napi::New(env, signature[i]));
+    ret[i] = signature[i];
   };
 
   return ret;
@@ -249,15 +243,14 @@ static Napi::Value transactionHash(const Napi::CallbackInfo& info) {
   }
 
   char *hash = NULL;
-  std::string trytes(info[0].As<Napi::String>().Utf8Value().c_str());
-  auto ctrytes = trytes.c_str();
+  auto ctrytes = info[0].As<Napi::String>().Utf8Value().c_str();
 
   if ((hash = iota_digest(ctrytes)) == NULL) {
     Napi::Error::New(env, "Binding iota_digest failed").ThrowAsJavaScriptException();
     return env.Null();
   }
 
-  auto ret = Napi::New(env, hash);
+  auto ret = Napi::String::New(env, hash);
   free(hash);
 
   return ret;
@@ -279,30 +272,24 @@ static Napi::Value bundleMiner(const Napi::CallbackInfo& info) {
   }
 
   byte_t bundleNormalizedMax[81];
-  Napi::Array bundle_array = info[0].As<Napi::Array>();
-  for (size_t i = 0; i < bundle_array->Length(); i++) {
-    bundleNormalizedMax[i] = bundle_array->Get(Napi::GetCurrentContext(), i)
-                                 
-                                 ->NumberValue(Napi::GetCurrentContext())
-                                 ;
+  Napi::Int8Array bundle_array = info[0].As<Napi::Int8Array>();
+  for (size_t i = 0; i < bundle_array.ElementLength(); i++) {
+    bundleNormalizedMax[i] = bundle_array[i];
   }
 
-  uint8_t security = static_cast<uint8_t>(Napi::To<unsigned>(info[1]));
-  size_t essenceLength = static_cast<size_t>(Napi::To<unsigned>(info[3]));
+  uint8_t security = static_cast<uint8_t>(Napi::Number(env, info[1]).Uint32Value());
+  size_t essenceLength = static_cast<size_t>(Napi::Number(env, info[1]).Uint32Value());
   trit_t *essence = (trit_t *)malloc(sizeof(trit_t) * essenceLength);
-  Napi::Array essence_array = info[2].As<Napi::Array>();
-  for (size_t i = 0; i < essence_array->Length(); i++) {
-    essence[i] = essence_array->Get(Napi::GetCurrentContext(), i)
-                     
-                     ->NumberValue(Napi::GetCurrentContext())
-                     ;
+  Napi::Int8Array essence_array = info[2].As<Napi::Int8Array>();
+  for (size_t i = 0; i < essence_array.ElementLength(); i++) {
+    essence[i] = essence_array[i];
   }
-  uint32_t count = static_cast<uint32_t>(Napi::To<unsigned>(info[4]));
-  uint8_t nprocs = static_cast<uint8_t>(Napi::To<unsigned>(info[5]));
+  uint32_t count = Napi::Number(env, info[4]).Uint32Value();
+  uint8_t nprocs = static_cast<uint8_t>(Napi::Number(env, info[5]).Uint32Value());
 
-  uint32_t miningThreshold = static_cast<uint32_t>(Napi::To<unsigned>(info[6]));
+  uint32_t miningThreshold = Napi::Number(env, info[6]).Uint32Value();
 
-  uint8_t fullySecure = static_cast<uint8_t>(Napi::To<unsigned>(info[7]));
+  uint8_t fullySecure = static_cast<uint8_t>(Napi::Number(env, info[7]).Uint32Value());
 
   bundle_miner_ctx_t *ctxs = NULL;
   size_t num_ctxs = 0;
@@ -314,27 +301,26 @@ static Napi::Value bundleMiner(const Napi::CallbackInfo& info) {
                         fullySecure == 1 ? true : false, &index, ctxs, num_ctxs, &found_optimal_index) != RC_OK) {
     bundle_miner_deallocate_ctxs(&ctxs);
 
-    return -1;
     free(essence);
     Napi::Error::New(env, "Bundle mining failed").ThrowAsJavaScriptException();
-    return env.Null();
+    return Napi::Number::New(env, -1);
   }
 
   bundle_miner_deallocate_ctxs(&ctxs);
-
-  return static_cast<uint32_t>(index);
   free(essence);
+  return Napi::Number::New(env, static_cast<double>(index));
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  NAN_EXPORT(target, powTrytes);
-  NAN_EXPORT(target, powBundle);
-  NAN_EXPORT(target, genAddressTrytes);
-  NAN_EXPORT(target, genAddressTrits);
-  NAN_EXPORT(target, genSignatureTrytes);
-  NAN_EXPORT(target, genSignatureTrits);
-  NAN_EXPORT(target, transactionHash);
-  NAN_EXPORT(target, bundleMiner);
+  exports.Set(Napi::String::New(env, "powTrytes"), Napi::Function::New(env, powTrytes));
+  exports.Set(Napi::String::New(env, "powBundle"), Napi::Function::New(env, powBundle));
+  exports.Set(Napi::String::New(env, "genAddressTrytes"), Napi::Function::New(env, genAddressTrytes));
+  exports.Set(Napi::String::New(env, "genAddressTrits"), Napi::Function::New(env, genAddressTrits));
+  exports.Set(Napi::String::New(env, "genSignatureTrytes"), Napi::Function::New(env, genSignatureTrytes));
+  exports.Set(Napi::String::New(env, "genSignatureTrits"), Napi::Function::New(env, genSignatureTrits));
+  exports.Set(Napi::String::New(env, "transactionHash"), Napi::Function::New(env, transactionHash));
+  exports.Set(Napi::String::New(env, "bundleMiner"), Napi::Function::New(env, bundleMiner));
+  return exports;
 }
 
 NODE_API_MODULE(NODE_GYP_MODULE_NAME, Init)
