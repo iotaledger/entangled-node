@@ -114,7 +114,7 @@ static Napi::Value genAddressTrytes(const Napi::CallbackInfo& info) {
   char *address = NULL;
   auto cseed = info[0].As<Napi::String>().Utf8Value().c_str();
   auto index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
-  auto security = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
+  auto security = static_cast<uint64_t>(Napi::Number(env, info[2]).Uint32Value());
 
   if ((address = iota_sign_address_gen_trytes(cseed, index, security)) == NULL) {
     memset_safe((void *)cseed, 81, 0, 81);
@@ -143,9 +143,9 @@ static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
   }
 
   trit_t seed[243];
-  Napi::Int8Array trits = info[0].As<Napi::Int8Array>();
-  for (size_t i = 0; i < trits.ElementLength(); i++) {
-    seed[i] = trits[i];
+  Napi::Array trits = info[0].As<Napi::Array>();
+  for (size_t i = 0; i < trits.Length(); i++) {
+    seed[i] = static_cast<trit_t>(static_cast<Napi::Value>(trits[i]).As<Napi::Number>().Uint32Value());
   }
   auto index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
 
@@ -153,7 +153,7 @@ static Napi::Value genAddressTrits(const Napi::CallbackInfo& info) {
 
   memset_safe((void *)seed, 243, 0, 243);
 
-  Napi::Int8Array ret = Napi::Int8Array::New(env, 243);
+  Napi::Array ret = Napi::Array::New(env, 243);
   for (size_t i = 0; i < 243; i++) {
     ret[i] = address[i];
   };
@@ -206,23 +206,23 @@ static Napi::Value genSignatureTrits(const Napi::CallbackInfo& info) {
   }
 
   trit_t seed[243];
-  Napi::Int8Array seed_array = info[0].As<Napi::Int8Array>();
-  for (size_t i = 0; i < seed_array.ElementLength(); i++) {
-    seed[i] = seed_array[i];
+  Napi::Array seed_array = info[0].As<Napi::Array>();
+  for (size_t i = 0; i < seed_array.Length(); i++) {
+    seed[i] = static_cast<trit_t>(static_cast<Napi::Value>(seed_array[i]).As<Napi::Number>().Uint32Value());
   }
   uint64_t index = static_cast<uint64_t>(Napi::Number(env, info[1]).Uint32Value());
   uint64_t security = static_cast<uint64_t>(Napi::Number(env, info[2]).Uint32Value());;
   trit_t bundle[243];
-  Napi::Int8Array bundle_array = info[3].As<Napi::Int8Array>();
-  for (size_t i = 0; i < bundle_array.ElementLength(); i++) {
-    bundle[i] = bundle_array[i];
+  Napi::Array bundle_array = info[3].As<Napi::Array>();
+  for (size_t i = 0; i < bundle_array.Length(); i++) {
+    bundle[i] = static_cast<trit_t>(static_cast<Napi::Value>(bundle_array[i]).As<Napi::Number>().Uint32Value());
   }
 
   trit_t *signature = iota_sign_signature_gen_trits(seed, index, security, bundle);
 
   memset_safe((void *)seed, 243, 0, 243);
 
-  Napi::Int8Array ret = Napi::Int8Array::New(env, 6561 * security);
+  Napi::Array ret = Napi::Array::New(env, 6561 * security);
   for (size_t i = 0; i < 6561 * security; i++) {
     ret[i] = signature[i];
   };
@@ -272,17 +272,17 @@ static Napi::Value bundleMiner(const Napi::CallbackInfo& info) {
   }
 
   byte_t bundleNormalizedMax[81];
-  Napi::Int8Array bundle_array = info[0].As<Napi::Int8Array>();
-  for (size_t i = 0; i < bundle_array.ElementLength(); i++) {
-    bundleNormalizedMax[i] = bundle_array[i];
+  Napi::Array bundle_array = info[0].As<Napi::Array>();
+  for (size_t i = 0; i < bundle_array.Length(); i++) {
+    bundleNormalizedMax[i] = static_cast<trit_t>(static_cast<Napi::Value>(bundle_array[i]).As<Napi::Number>().Uint32Value());
   }
 
   uint8_t security = static_cast<uint8_t>(Napi::Number(env, info[1]).Uint32Value());
   size_t essenceLength = static_cast<size_t>(Napi::Number(env, info[1]).Uint32Value());
   trit_t *essence = (trit_t *)malloc(sizeof(trit_t) * essenceLength);
-  Napi::Int8Array essence_array = info[2].As<Napi::Int8Array>();
-  for (size_t i = 0; i < essence_array.ElementLength(); i++) {
-    essence[i] = essence_array[i];
+  Napi::Array essence_array = info[2].As<Napi::Array>();
+  for (size_t i = 0; i < essence_array.Length(); i++) {
+    essence[i] = static_cast<trit_t>(static_cast<Napi::Value>(essence_array[i]).As<Napi::Number>().Uint32Value());
   }
   uint32_t count = Napi::Number(env, info[4]).Uint32Value();
   uint8_t nprocs = static_cast<uint8_t>(Napi::Number(env, info[5]).Uint32Value());
@@ -308,7 +308,7 @@ static Napi::Value bundleMiner(const Napi::CallbackInfo& info) {
 
   bundle_miner_deallocate_ctxs(&ctxs);
   free(essence);
-  return Napi::Number::New(env, static_cast<double>(index));
+  return Napi::Number::New(env, index);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
