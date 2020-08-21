@@ -1,4 +1,4 @@
-const iotaCommonApi = require('./build/Release/iota_common.node')
+const iotaCommonApi = require('./build/Release/iota_common-node.node')
 
 /**
  * Do Proof of Work on trytes

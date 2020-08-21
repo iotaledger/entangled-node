@@ -1,4 +1,6 @@
-project(entangled-node)
+project(iota_common-node)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(${CMAKE_JS_INC})
 file(GLOB SOURCE_FILES "src/interface.cpp")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
@@ -13,7 +15,7 @@ include(FetchContent)
 FetchContent_Declare(
   iota_common
   GIT_REPOSITORY https://github.com/iotaledger/iota_common.git
-  GIT_TAG 1b56a5282933fb674181001630e7b2e2c33b5eea # could be branch name, tag or commit hash.
+  GIT_TAG 12d54bfadead696a4ffac40ce2ba01d62e9dc35d # could be branch name, tag or commit hash.
 )
 
 if(${CMAKE_VERSION} VERSION_LESS 3.14)
@@ -29,14 +31,19 @@ endif()
 message(STATUS "Fetching iota_common")
 FetchContent_MakeAvailable(iota_common)
 
+find_library(
+    KECCAK
+    NAMES keccak libkeccak
+    HINTS "${CMAKE_INSTALL_PREFIX}/lib"
+    NO_DEFAULT_PATH
+)
+
 # iota_common headers
-target_include_directories(entangled-node PUBLIC
+target_include_directories(iota_common-node PUBLIC
   "${CMAKE_INSTALL_PREFIX}/include",
+  "${CMAKE_INSTALL_PREFIX}/include/keccak",
   "${iota_common_SOURCE_DIR}"
 )
 
 # link dependent libraries
-target_link_libraries(entangled-node PUBLIC
-  logger
-  keccak
-)
+target_link_libraries(iota_common-node PUBLIC common ${KECCAK})
