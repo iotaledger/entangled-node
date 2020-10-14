@@ -53,7 +53,6 @@ static NAN_METHOD(powBundle) {
   char serializedTrytes[NUM_TRYTES_SERIALIZED_TRANSACTION + 1] = {0};
   flex_trit_t flexTrunk[FLEX_TRIT_SIZE_243];
   flex_trit_t flexBranch[FLEX_TRIT_SIZE_243];
-  size_t i = 0;
 
   std::string trunk(*Nan::Utf8String(info[1]));
   flex_trits_from_trytes(flexTrunk, NUM_TRITS_TRUNK, (tryte_t *)trunk.c_str(), NUM_TRYTES_TRUNK, NUM_TRYTES_TRUNK);
@@ -82,7 +81,7 @@ static NAN_METHOD(powBundle) {
   }
 
   v8::Local<v8::Array> ret = Nan::New<v8::Array>(txNum);
-  i = 0;
+  size_t i = 0;
   BUNDLE_FOREACH(bundle, curTx) {
     transaction_serialize_on_flex_trits(curTx, serializedFlexTrits);
     flex_trits_to_trytes((tryte_t *)serializedTrytes, NUM_TRYTES_SERIALIZED_TRANSACTION, serializedFlexTrits,
