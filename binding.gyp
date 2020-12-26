@@ -34,7 +34,7 @@
          "iota_common/utils/time.c",
          "src/keccak/KeccakP-1600-reference.c",
          "src/keccak/KeccakSpongeWidth1600.c",
-         "src/keccak/KeccakHash.c",
+         "src/keccak/FIPS202/KeccakHash.c",
       ],
       "cflags+": ["-std=gnu99", "-msse2"],
       "conditions": [
@@ -50,7 +50,8 @@
          "iota_common",
          "src",
          "src/utarray",
-         "src/embear"
+         "src/embear",
+         "src/keccak",
       ],
       "defines": [
         "PCURL_STATE_SHORT",
