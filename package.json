@@ -9,7 +9,7 @@
 		"test": "mocha test/iota_common.js",
 		"rebuild": "prebuild --compile",
 		"prebuild-node": "prebuild -t 10.23.0 -t 12.20.0 -t 14.15.3 --strip",
-		"prebuild-electron": "prebuild -t 8.5.5 -t 9.4.0 -r electron --strip",
+		"prebuild-electron": "prebuild -t 7.3.3 -t 8.5.5 -t 9.4.0 -r electron --strip",
 		"prebuild": "npm run prebuild-node && npm run prebuild-electron && node ./src/upload.js",
 		"clang-format": "clang-format -style=file -fallback-style=none -i src/interface.cpp"
 	},
