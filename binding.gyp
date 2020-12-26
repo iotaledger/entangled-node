@@ -38,13 +38,16 @@
       ],
       "cflags+": ["-std=gnu99", "-msse2"],
       "conditions": [
-          ['OS=="mac"', {
-            "xcode_settings": {
-              "GCC_C_LANGUAGE_STANDARD": "gnu99",
-              "OTHER_CFLAGS" : ["-msse2"],
-            },
-          }],
-        ],
+        ['OS=="mac"', {
+          "xcode_settings": {
+            "GCC_C_LANGUAGE_STANDARD": "gnu99",
+            "OTHER_CFLAGS" : ["-msse2"],
+          },
+        }],
+        ['OS=="windows"', {
+          "cflags_cc+": ["-std=c++latest"], 
+        }],
+      ],
       "include_dirs": [
          "<!(node -e \"require('nan')\")",
          "iota_common",
