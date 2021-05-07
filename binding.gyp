@@ -34,23 +34,27 @@
          "iota_common/utils/time.c",
          "src/keccak/KeccakP-1600-reference.c",
          "src/keccak/KeccakSpongeWidth1600.c",
-         "src/keccak/KeccakHash.c",
+         "src/keccak/FIPS202/KeccakHash.c",
       ],
       "cflags+": ["-std=gnu99", "-msse2"],
       "conditions": [
-          ['OS=="mac"', {
-            "xcode_settings": {
-              "GCC_C_LANGUAGE_STANDARD": "gnu99",
-              "OTHER_CFLAGS" : ["-msse2"],
-            },
-          }],
-        ],
+        ['OS=="mac"', {
+          "xcode_settings": {
+            "GCC_C_LANGUAGE_STANDARD": "gnu99",
+            "OTHER_CFLAGS" : ["-msse2"],
+          },
+        }],
+        ['OS=="windows"', {
+          "cflags_cc+": ["-std=c++latest"], 
+        }],
+      ],
       "include_dirs": [
          "<!(node -e \"require('nan')\")",
          "iota_common",
          "src",
          "src/utarray",
-         "src/embear"
+         "src/embear",
+         "src/keccak",
       ],
       "defines": [
         "PCURL_STATE_SHORT",
