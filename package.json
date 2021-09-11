@@ -31,6 +31,6 @@
 	},
 	"dependencies": {
 		"nan": "^2.14.0",
-		"prebuild-install": "^5.3.3"
+		"prebuild-install": "^5.3.6"
 	}
 }
